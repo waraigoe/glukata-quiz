@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meet in 1 second and instant push! Glucoseman Quiz</title>
+    <title>出会って1秒で即押し！グルコースマンクイズ</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -48,26 +48,26 @@
 </head>
 <body>
     <div id="start-screen">
-        <h1>Meet in 1 second and instant push! Glucoseman Quiz</h1>
-        <p id="description">A keyword and two images of Glucoseman and InfoKatan will be shown. Select the image that corresponds to the keyword within 2 seconds! Be careful with trick questions. Aim for 10 correct answers in a row.</p>
-        <img src="start-image.jpg" alt="Start screen image" style="width: 300px; height: auto;">
-        <button onclick="startQuiz()">Start the quiz</button>
+        <h1>出会って1秒で即押し！グルコースマンクイズ</h1>
+        <p id="description">あるキーワードと、グルコースマンとジョウホウカターンの二枚の画像が出ます。そのキーワードを表している方のキャラの画像を2秒以内に選択して下さい！引っかけ問題に注意！目指せ10問全問正解！</p>
+        <img src="start-image.jpg" alt="スタート画面画像" style="width: 300px; height: auto;">
+        <button onclick="startQuiz()">クイズを始める</button>
     </div>
     <div id="quiz-screen" style="display: none;">
         <div id="keyword"></div>
         <div id="images">
-            <img id="img1" class="character-img" onclick="checkAnswer(this)">
-            <img id="img2" class="character-img" onclick="checkAnswer(this)">
+            <img id="img1" class="character-img" onclick="checkAnswer(this)" />
+            <img id="img2" class="character-img" onclick="checkAnswer(this)" />
         </div>
         <div id="result"></div>
     </div>
     <div id="result-screen" style="display: none;">
-        <h2>Result</h2>
+        <h2>結果</h2>
         <p id="score"></p>
         <p id="message"></p>
-        <img id="result-img" alt="Result image">
-        <button onclick="retryQuiz()">Try again</button>
-        <button onclick="backToStart()">Back to start</button>
+        <img id="result-img" alt="結果画像">
+        <button onclick="retryQuiz()">もう一度チャレンジする</button>
+        <button onclick="backToStart()">スタート画面に戻る</button>
     </div>
 
     <audio id="start-bgm" loop>
@@ -79,42 +79,42 @@
 
     <script>
         const normalKeywords = [
-            { word: "Purple", answer: "glucose" },
-            { word: "Glucose", answer: "glucose" },
-            { word: "Hyogo dialect", answer: "glucose" },
-            { word: "Himeji", answer: "glucose" },
-            { word: "Hero", answer: "glucose" },
-            { word: "Goja", answer: "glucose" },
+            { word: "紫", answer: "glucose" },
+            { word: "ブドウ糖", answer: "glucose" },
+            { word: "播州弁", answer: "glucose" },
+            { word: "姫路", answer: "glucose" },
+            { word: "ヒーロー", answer: "glucose" },
+            { word: "ごじゃ", answer: "glucose" },
             { word: "glucose", answer: "glucose" },
-            { word: "Dabo", answer: "glucose" },
-            { word: "Bechcho nai", answer: "glucose" },
-            { word: "400 years in the future", answer: "glucose" },
-            { word: "Token", answer: "glucose" },
-            { word: "Financier", answer: "glucose" },
-            { word: "Holding food", answer: "glucose" },
-            { word: "Black", answer: "info" },
-            { word: "Information overload", answer: "info" },
-            { word: "Enemy", answer: "info" },
-            { word: "Evil", answer: "info" },
-            { word: "Kata of GluKata", answer: "info" },
-            { word: "Warai goe", answer: "info" },
-            { word: "Forehead with Jikaji", answer: "info" },
-            { word: "Actually 24 people", answer: "info" },
-            { word: "Awaken", answer: "info" },
-            { word: "Holding condiment", answer: "info" }
+            { word: "ダボ", answer: "glucose" },
+            { word: "べっちょない", answer: "glucose" },
+            { word: "400年後の未来", answer: "glucose" },
+            { word: "トークン", answer: "glucose" },
+            { word: "フィナンシェ", answer: "glucose" },
+            { word: "手に料理", answer: "glucose" },
+            { word: "黒", answer: "info" },
+            { word: "情報過多", answer: "info" },
+            { word: "敵", answer: "info" },
+            { word: "悪", answer: "info" },
+            { word: "グルカタのカタ", answer: "info" },
+            { word: "わらいごえ", answer: "info" },
+            { word: "額にジかぢ", answer: "info" },
+            { word: "実は24人いる", answer: "info" },
+            { word: "覚醒する", answer: "info" },
+            { word: "手に調味料", answer: "info" }
         ];
 
         const trickKeywords1 = [
-            { word: "Budou-chan", answer: "budou" },
-            { word: "Glucoseman's creator", answer: "budou" },
-            { word: "Winter melon", answer: "budou" },
-            { word: "1000 km marathon", answer: "budou" },
-            { word: "Financier who issues tokens", answer: "budou" }
+            { word: "ブドウちゃん", answer: "budou" },
+            { word: "グルコースマンの生みの親", answer: "budou" },
+            { word: "冬瓜", answer: "budou" },
+            { word: "1000キロマラソン", answer: "budou" },
+            { word: "フィナンシェでトークンを出す男", answer: "budou" }
         ];
 
         const trickKeywords2 = [
-            { word: "Real Glucoseman", answer: "real" },
-            { word: "Yokotto-kun's partner", answer: "real" }
+            { word: "リアルグルコースマン", answer: "real" },
+            { word: "よこっと君の相方", answer: "real" }
         ];
 
         const glucoseImages = [
@@ -177,7 +177,7 @@
             }
 
             let keyword = usedKeywords[currentQuestion];
-            document.getElementById("keyword").textContent = `Problem ${currentQuestion + 1}: "${keyword.word}"`;
+            document.getElementById("keyword").textContent = `問題 ${currentQuestion + 1}: "${keyword.word}"`;
 
             let img1 = document.getElementById("img1");
             let img2 = document.getElementById("img2");
@@ -224,6 +224,10 @@
                 });
             }
 
+            // Clear previous images
+            img1.src = "";
+            img2.src = "";
+
             // Load both images
             let img1Load = loadImage(img1, img1Src);
             let img2Load = loadImage(img2, img2Src);
@@ -262,9 +266,13 @@
 
                 // Start timer
                 timer = setTimeout(() => {
-                    document.getElementById("result").textContent = "Time's up!";
+                    document.getElementById("result").textContent = "時間切れ！";
                     setTimeout(nextQuestion, 1000);
                 }, timeLimit);
+            }).catch(error => {
+                console.error("Image loading error:", error);
+                document.getElementById("result").textContent = "画像の読み込みに失敗しました。";
+                setTimeout(nextQuestion, 1000);
             });
         }
 
@@ -275,9 +283,9 @@
 
             if (selectedType === correctAnswer) {
                 score++;
-                document.getElementById("result").textContent = "Correct!";
+                document.getElementById("result").textContent = "正解！";
             } else {
-                document.getElementById("result").textContent = "Incorrect...";
+                document.getElementById("result").textContent = "不正解…";
             }
 
             setTimeout(nextQuestion, 1000);
@@ -295,23 +303,23 @@
 
             let message, imgSrc;
             if (score === 10) {
-                message = "Congratulations! You're now a Glucoseman Doctor!";
+                message = "おめでとう！これであなたもグルコースマン博士ごじゃ！";
                 imgSrc = "perfect.jpg";
             } else if (score >= 7) {
-                message = "Close! Just one more step!";
+                message = "惜しい！あと一歩ごじゃ！";
                 imgSrc = "good.jpg";
             } else if (score >= 3) {
-                message = "Still room for improvement!";
+                message = "まだまだごじゃ！";
                 imgSrc = "average.jpg";
             } else if (score >= 1) {
-                message = "What are you doing, Dabo!";
+                message = "何やっとんねんダボ！";
                 imgSrc = "bad.jpg";
             } else {
-                message = "You must be InfoKatan!";
+                message = "お前、ジョウホウカターンやろ！";
                 imgSrc = "fail.jpg";
             }
 
-            document.getElementById("score").textContent = `Score: ${score}/10`;
+            document.getElementById("score").textContent = `スコア: ${score}/10`;
             document.getElementById("message").textContent = message;
             let resultImg = document.getElementById("result-img");
             resultImg.src = imgSrc;
