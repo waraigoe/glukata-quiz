@@ -164,7 +164,7 @@
             loadQuestion();
         }
 
-        const timeLimit = 2000; // 2秒
+        const timeLimit = 2000; // 2 seconds
 
         function loadQuestion() {
             clearTimeout(timer);
@@ -295,7 +295,7 @@
         }
 
         function showResult() {
-            quizBgm.pause();
+            // クイズ中の音楽はそのまま流れ続ける（pauseしない）
             document.getElementById("quiz-screen").style.display = "none";
             document.getElementById("result-screen").style.display = "block";
 
@@ -325,8 +325,8 @@
         }
 
         function backToStart() {
-            quizBgm.pause();
-            startBgm.play();
+            quizBgm.pause();  // クイズ中の音楽を停止
+            startBgm.play();  // スタート画面の音楽を再生
             document.getElementById("result-screen").style.display = "none";
             document.getElementById("quiz-screen").style.display = "none";
             document.getElementById("start-screen").style.display = "block";
