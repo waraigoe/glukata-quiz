@@ -66,7 +66,6 @@
         <p id="score"></p>
         <p id="message"></p>
         <img id="result-img" alt="結果画像">
-        <button onclick="retryQuiz()">もう一度チャレンジする</button>
         <button onclick="backToStart()">スタート画面に戻る</button>
     </div>
 
@@ -149,6 +148,7 @@
         }
 
         function startQuiz() {
+            clearTimeout(timer);
             startBgm.pause();
             quizBgm.play();
             document.getElementById("start-screen").style.display = "none";
@@ -171,6 +171,7 @@
         const timeLimit = 2000; // 2 seconds
 
         function loadQuestion() {
+            clearTimeout(timer);
             if (currentQuestion >= 10) {
                 showResult();
                 return;
@@ -181,6 +182,11 @@
 
             let img1 = document.getElementById("img1");
             let img2 = document.getElementById("img2");
+
+            img1.src = "";
+            img2.src = "";
+            img1.removeAttribute("data-type");
+            img2.removeAttribute("data-type");
 
             let img1Src, img2Src;
 
@@ -224,10 +230,6 @@
                 });
             }
 
-            // Clear previous images
-            img1.src = "";
-            img2.src = "";
-
             // Load both images
             let img1Load = loadImage(img1, img1Src);
             let img2Load = loadImage(img2, img2Src);
@@ -236,7 +238,7 @@
             Promise.all([img1Load, img2Load]).then(() => {
                 // Set the type attributes after images are loaded
                 if (keyword.answer === "budou") {
-                    if (img1Src.endsWith(".jpg") && budouImages.includes(img1Src)) {
+                    if (img1.src === budouImg) {
                         img1.dataset.type = "budou";
                         img2.dataset.type = "normal";
                     } else {
@@ -244,7 +246,7 @@
                         img2.dataset.type = "budou";
                     }
                 } else if (keyword.answer === "real") {
-                    if (img1Src === realImage) {
+                    if (img1.src === realImage) {
                         img1.dataset.type = "real";
                         img2.dataset.type = "normal";
                     } else {
@@ -252,7 +254,7 @@
                         img2.dataset.type = "real";
                     }
                 } else {
-                    if (img1Src.startsWith("glucose")) {
+                    if (img1.src.startsWith("glucose")) {
                         img1.dataset.type = "glucose";
                         img2.dataset.type = "info";
                     } else {
@@ -266,13 +268,15 @@
 
                 // Start timer
                 timer = setTimeout(() => {
-                    document.getElementById("result").textContent = "時間切れ！";
+                    document.getElementById("result").textContent = "Time's up!";
                     setTimeout(nextQuestion, 1000);
                 }, timeLimit);
             }).catch(error => {
                 console.error("Image loading error:", error);
                 document.getElementById("result").textContent = "画像の読み込みに失敗しました。";
-                setTimeout(nextQuestion, 1000);
+                setTimeout(() => {
+                    nextQuestion();
+                }, timeLimit); // Wait for timeLimit before moving to next question
             });
         }
 
@@ -283,9 +287,9 @@
 
             if (selectedType === correctAnswer) {
                 score++;
-                document.getElementById("result").textContent = "正解！";
+                document.getElementById("result").textContent = "Correct!";
             } else {
-                document.getElementById("result").textContent = "不正解…";
+                document.getElementById("result").textContent = "Incorrect...";
             }
 
             setTimeout(nextQuestion, 1000);
@@ -303,35 +307,27 @@
 
             let message, imgSrc;
             if (score === 10) {
-                message = "おめでとう！これであなたもグルコースマン博士ごじゃ！";
+                message = "Congratulations! You're now a Glucoseman Doctor!";
                 imgSrc = "perfect.jpg";
             } else if (score >= 7) {
-                message = "惜しい！あと一歩ごじゃ！";
+                message = "Close! Just one more step!";
                 imgSrc = "good.jpg";
             } else if (score >= 3) {
-                message = "まだまだごじゃ！";
+                message = "Still room for improvement!";
                 imgSrc = "average.jpg";
             } else if (score >= 1) {
-                message = "何やっとんねんダボ！";
+                message = "What are you doing, Dabo!";
                 imgSrc = "bad.jpg";
             } else {
-                message = "お前、ジョウホウカターンやろ！";
+                message = "You must be InfoKatan!";
                 imgSrc = "fail.jpg";
             }
 
-            document.getElementById("score").textContent = `スコア: ${score}/10`;
+            document.getElementById("score").textContent = `Score: ${score}/10`;
             document.getElementById("message").textContent = message;
             let resultImg = document.getElementById("result-img");
             resultImg.src = imgSrc;
             resultImg.style.display = "block";
-        }
-
-        function retryQuiz() {
-            quizBgm.pause();
-            startBgm.play();
-            document.getElementById("result-screen").style.display = "none";
-            document.getElementById("start-screen").style.display = "block";
-            startQuiz();
         }
 
         function backToStart() {
