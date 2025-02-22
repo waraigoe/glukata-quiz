@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>出会って5秒で即押し！グルコースマンクイズ</title>
+    <title>出会って3秒で即押し！グルコースマンクイズ</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -44,7 +44,7 @@
 </head>
 <body>
     <div id="start-screen">
-        <h1>出会って5秒で即押し！グルコースマンクイズ</h1>
+        <h1>出会って3秒で即押し！グルコースマンクイズ</h1>
         <p id="description">あるキーワードと、グルコースマンとジョウホウカターンの二枚の画像が出ます。そのキーワードを表しているキャラの画像を選択して下さい。目指せ10問全問正解！</p>
         <img src="start-image.jpg" alt="スタート画面画像" style="width: 300px; height: auto;">
         <button onclick="startQuiz()">クイズを始める</button>
@@ -74,17 +74,46 @@
     </audio>
 
     <script>
-        const keywords = [
+        // 通常のキーワード
+        const normalKeywords = [
             { word: "紫", answer: "glucose" },
             { word: "ブドウ糖", answer: "glucose" },
             { word: "播州弁", answer: "glucose" },
             { word: "姫路", answer: "glucose" },
             { word: "ヒーロー", answer: "glucose" },
+            { word: "ごじゃ", answer: "glucose" },
+            { word: "glucose", answer: "glucose" },
+            { word: "ダボ", answer: "glucose" },
+            { word: "べっちょない", answer: "glucose" },
+            { word: "400年後の未来", answer: "glucose" },
+            { word: "トークン", answer: "glucose" },
+            { word: "フィナンシェ", answer: "glucose" },
+            { word: "手に料理", answer: "glucose" },
             { word: "黒", answer: "info" },
             { word: "情報過多", answer: "info" },
             { word: "敵", answer: "info" },
             { word: "悪", answer: "info" },
-            { word: "グルカタのカタ", answer: "info" }
+            { word: "グルカタのカタ", answer: "info" },
+            { word: "わらいごえ", answer: "info" },
+            { word: "額にジかぢ", answer: "info" },
+            { word: "実は24人いる", answer: "info" },
+            { word: "覚醒する", answer: "info" },
+            { word: "手に調味料", answer: "info" }
+        ];
+
+        // 引っかけ問題1：budou画像が正解
+        const trickKeywords1 = [
+            { word: "ブドウちゃん", answer: "budou" },
+            { word: "グルコースマンの生みの親", answer: "budou" },
+            { word: "冬瓜", answer: "budou" },
+            { word: "1000キロマラソン", answer: "budou" },
+            { word: "フィナンシェでトークンを出す男", answer: "budou" }
+        ];
+
+        // 引っかけ問題2：real画像が正解
+        const trickKeywords2 = [
+            { word: "リアルグルコースマン", answer: "real" },
+            { word: "よこっと君の相方", answer: "real" }
         ];
 
         const glucoseImages = [
@@ -95,6 +124,8 @@
             "info1.jpg", "info2.jpg", "info3.jpg", "info4.jpg", "info5.jpg",
             "info6.jpg", "info7.jpg", "info8.jpg", "info9.jpg", "info10.jpg"
         ];
+        const budouImages = ["budou1.jpg", "budou2.jpg", "budou3.jpg", "budou4.jpg", "budou5.jpg"];
+        const realImage = "real.jpg";
 
         let currentQuestion = 0;
         let score = 0;
@@ -121,7 +152,15 @@
             quizBgm.play();
             document.getElementById("start-screen").style.display = "none";
             document.getElementById("quiz-screen").style.display = "block";
-            usedKeywords = shuffle(keywords).slice(0, 10);
+
+            // 通常問題8問 + 引っかけ問題2問（ランダムに選択）
+            const normalQuestions = shuffle(normalKeywords).slice(0, 8);
+            const trickQuestions = [
+                ...shuffle(trickKeywords1).slice(0, 1),
+                ...shuffle(trickKeywords2).slice(0, 1)
+            ];
+            usedKeywords = shuffle([...normalQuestions, ...trickQuestions]);
+
             usedGlucoseImages = shuffle(glucoseImages);
             usedInfoImages = shuffle(infoImages);
             currentQuestion = 0;
@@ -138,33 +177,64 @@
             let keyword = usedKeywords[currentQuestion];
             document.getElementById("keyword").textContent = `問題 ${currentQuestion + 1}: 「${keyword.word}」`;
 
-            let glucoseImg = usedGlucoseImages.pop();
-            let infoImg = usedInfoImages.pop();
-
             let img1 = document.getElementById("img1");
             let img2 = document.getElementById("img2");
 
-            if (Math.random() > 0.5) {
-                img1.src = glucoseImg;
-                img1.dataset.type = "glucose";
-                img2.src = infoImg;
-                img2.dataset.type = "info";
+            if (keyword.answer === "budou") {
+                // 引っかけ問題1: budou画像と通常画像
+                let budouImg = budouImages[Math.floor(Math.random() * budouImages.length)];
+                let normalImg = Math.random() > 0.5 ? usedGlucoseImages.pop() : usedInfoImages.pop();
+                if (Math.random() > 0.5) {
+                    img1.src = budouImg;
+                    img1.dataset.type = "budou";
+                    img2.src = normalImg;
+                    img2.dataset.type = "normal";
+                } else {
+                    img1.src = normalImg;
+                    img1.dataset.type = "normal";
+                    img2.src = budouImg;
+                    img2.dataset.type = "budou";
+                }
+            } else if (keyword.answer === "real") {
+                // 引っかけ問題2: real画像と通常画像
+                let normalImg = Math.random() > 0.5 ? usedGlucoseImages.pop() : usedInfoImages.pop();
+                if (Math.random() > 0.5) {
+                    img1.src = realImage;
+                    img1.dataset.type = "real";
+                    img2.src = normalImg;
+                    img2.dataset.type = "normal";
+                } else {
+                    img1.src = normalImg;
+                    img1.dataset.type = "normal";
+                    img2.src = realImage;
+                    img2.dataset.type = "real";
+                }
             } else {
-                img1.src = infoImg;
-                img1.dataset.type = "info";
-                img2.src = glucoseImg;
-                img2.dataset.type = "glucose";
+                // 通常問題
+                let glucoseImg = usedGlucoseImages.pop();
+                let infoImg = usedInfoImages.pop();
+                if (Math.random() > 0.5) {
+                    img1.src = glucoseImg;
+                    img1.dataset.type = "glucose";
+                    img2.src = infoImg;
+                    img2.dataset.type = "info";
+                } else {
+                    img1.src = infoImg;
+                    img1.dataset.type = "info";
+                    img2.src = glucoseImg;
+                    img2.dataset.type = "glucose";
+                }
             }
 
             document.getElementById("result").textContent = "";
             img1.onclick = () => checkAnswer(img1);
             img2.onclick = () => checkAnswer(img2);
 
-            // 5秒タイマー開始（自動で不正解にせずに次の問題へ）
+            // 3秒タイマー開始（自動で不正解にせずに次の問題へ）
             timer = setTimeout(() => {
                 document.getElementById("result").textContent = "時間切れ！";
                 setTimeout(nextQuestion, 1000); // 1秒後に次の問題へ
-            }, 5000);
+            }, 3000);
         }
 
         function checkAnswer(img) {
