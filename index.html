@@ -56,8 +56,8 @@
     <div id="quiz-screen" style="display: none;">
         <div id="keyword"></div>
         <div id="images">
-            <img id="img1" class="character-img" onclick="checkAnswer(this)" />
-            <img id="img2" class="character-img" onclick="checkAnswer(this)" />
+            <img id="img1" class="character-img" />
+            <img id="img2" class="character-img" />
         </div>
         <div id="result"></div>
     </div>
@@ -260,6 +260,10 @@
                             img2.dataset.type = "glucose";
                         }
                     }
+
+                    // クリックイベントを再設定
+                    img1.onclick = () => checkAnswer(img1);
+                    img2.onclick = () => checkAnswer(img2);
 
                     // タイマーを開始
                     timer = setTimeout(() => {
