@@ -164,7 +164,7 @@
             loadQuestion();
         }
 
-        const timeLimit = 2000; // 2 seconds
+        const timeLimit = 2000; // 2秒
 
         function loadQuestion() {
             clearTimeout(timer);
@@ -264,6 +264,9 @@
                     // タイマーを開始
                     timer = setTimeout(() => {
                         document.getElementById("result").textContent = "時間切れ！";
+                        // 時間切れ後はクリックを無効化
+                        img1.onclick = null;
+                        img2.onclick = null;
                         setTimeout(nextQuestion, 1000);
                     }, timeLimit);
                 })
@@ -286,6 +289,9 @@
                 document.getElementById("result").textContent = "不正解…";
             }
 
+            // 回答後はクリックを無効化
+            document.getElementById("img1").onclick = null;
+            document.getElementById("img2").onclick = null;
             setTimeout(nextQuestion, 1000);
         }
 
@@ -295,7 +301,6 @@
         }
 
         function showResult() {
-            // クイズ中の音楽はそのまま流れ続ける（pauseしない）
             document.getElementById("quiz-screen").style.display = "none";
             document.getElementById("result-screen").style.display = "block";
 
@@ -325,8 +330,8 @@
         }
 
         function backToStart() {
-            quizBgm.pause();  // クイズ中の音楽を停止
-            startBgm.play();  // スタート画面の音楽を再生
+            quizBgm.pause();
+            startBgm.play();
             document.getElementById("result-screen").style.display = "none";
             document.getElementById("quiz-screen").style.display = "none";
             document.getElementById("start-screen").style.display = "block";
