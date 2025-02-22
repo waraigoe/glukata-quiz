@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>出会って3秒で即押し！グルコースマンクイズ</title>
+    <title>出会って1秒で即押し！グルコースマンクイズ</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -42,14 +42,14 @@
         }
         button {
             padding: 10px 20px;
-            font-size: 24px; /* ボタンの文字を大きく */
+            font-size: 24px;
         }
     </style>
 </head>
 <body>
     <div id="start-screen">
-        <h1>出会って3秒で即押し！グルコースマンクイズ</h1>
-        <p id="description">あるキーワードと、グルコースマンとジョウホウカターンの二枚の画像が出ます。そのキーワードを表している方のキャラの画像を選択して下さい！引っかけ問題に注意！目指せ10問全問正解！</p>
+        <h1>出会って1秒で即押し！グルコースマンクイズ</h1>
+        <p id="description">あるキーワードと、グルコースマンとジョウホウカターンの二枚の画像が出ます。そのキーワードを表している方のキャラの画像を1.5秒以内に選択して下さい！引っかけ問題に注意！目指せ10問全問正解！</p>
         <img src="start-image.jpg" alt="スタート画面画像" style="width: 300px; height: auto;">
         <button onclick="startQuiz()">クイズを始める</button>
     </div>
@@ -78,7 +78,6 @@
     </audio>
 
     <script>
-        // 通常のキーワード
         const normalKeywords = [
             { word: "紫", answer: "glucose" },
             { word: "ブドウ糖", answer: "glucose" },
@@ -105,7 +104,6 @@
             { word: "手に調味料", answer: "info" }
         ];
 
-        // 引っかけ問題1：budou画像が正解
         const trickKeywords1 = [
             { word: "ブドウちゃん", answer: "budou" },
             { word: "グルコースマンの生みの親", answer: "budou" },
@@ -114,7 +112,6 @@
             { word: "フィナンシェでトークンを出す男", answer: "budou" }
         ];
 
-        // 引っかけ問題2：real画像が正解
         const trickKeywords2 = [
             { word: "リアルグルコースマン", answer: "real" },
             { word: "よこっと君の相方", answer: "real" }
@@ -141,7 +138,7 @@
         const startBgm = document.getElementById("start-bgm");
         const quizBgm = document.getElementById("quiz-bgm");
 
-        startBgm.play(); // ページ読み込み時にスタートBGM開始
+        startBgm.play();
 
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -157,7 +154,6 @@
             document.getElementById("start-screen").style.display = "none";
             document.getElementById("quiz-screen").style.display = "block";
 
-            // 通常問題8問 + 引っかけ問題2問（ランダムに選択）
             const normalQuestions = shuffle(normalKeywords).slice(0, 8);
             const trickQuestions = [
                 ...shuffle(trickKeywords1).slice(0, 1),
@@ -185,7 +181,6 @@
             let img2 = document.getElementById("img2");
 
             if (keyword.answer === "budou") {
-                // 引っかけ問題1: budou画像と通常画像
                 let budouImg = budouImages[Math.floor(Math.random() * budouImages.length)];
                 let normalImg = Math.random() > 0.5 ? usedGlucoseImages.pop() : usedInfoImages.pop();
                 if (Math.random() > 0.5) {
@@ -200,7 +195,6 @@
                     img2.dataset.type = "budou";
                 }
             } else if (keyword.answer === "real") {
-                // 引っかけ問題2: real画像と通常画像
                 let normalImg = Math.random() > 0.5 ? usedGlucoseImages.pop() : usedInfoImages.pop();
                 if (Math.random() > 0.5) {
                     img1.src = realImage;
@@ -214,7 +208,6 @@
                     img2.dataset.type = "real";
                 }
             } else {
-                // 通常問題
                 let glucoseImg = usedGlucoseImages.pop();
                 let infoImg = usedInfoImages.pop();
                 if (Math.random() > 0.5) {
@@ -234,15 +227,14 @@
             img1.onclick = () => checkAnswer(img1);
             img2.onclick = () => checkAnswer(img2);
 
-            // 3秒タイマー開始（自動で不正解にせずに次の問題へ）
             timer = setTimeout(() => {
                 document.getElementById("result").textContent = "時間切れ！";
-                setTimeout(nextQuestion, 1000); // 1秒後に次の問題へ
-            }, 3000);
+                setTimeout(nextQuestion, 1000);
+            }, 1500); // タイマーを1.5秒に変更
         }
 
         function checkAnswer(img) {
-            clearTimeout(timer); // タイマーを停止
+            clearTimeout(timer);
             let selectedType = img.dataset.type;
             let correctAnswer = usedKeywords[currentQuestion].answer;
 
@@ -253,7 +245,7 @@
                 document.getElementById("result").textContent = "不正解…";
             }
 
-            setTimeout(nextQuestion, 1000); // 1秒後に次の問題へ
+            setTimeout(nextQuestion, 1000);
         }
 
         function nextQuestion() {
@@ -262,7 +254,7 @@
         }
 
         function showResult() {
-            quizBgm.play(); // 結果画面でもBGM継続
+            quizBgm.play();
             document.getElementById("quiz-screen").style.display = "none";
             document.getElementById("result-screen").style.display = "block";
 
