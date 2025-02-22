@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>出会って1秒で即押し！グルコースマンクイズ</title>
+    <title>出会って5秒で即押し！グルコースマンクイズ</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -32,21 +32,20 @@
             font-size: 20px;
             margin-top: 20px;
         }
-        #next-btn {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            display: none;
-        }
         #result-img {
             display: none;
             margin-top: 20px;
+        }
+        #description {
+            font-size: 18px;
+            margin: 20px;
         }
     </style>
 </head>
 <body>
     <div id="start-screen">
-        <h1>出会って1秒で即押し！グルコースマンクイズ</h1>
+        <h1>出会って5秒で即押し！グルコースマンクイズ</h1>
+        <p id="description">あるキーワードと、グルコースマンとジョウホウカターンの二枚の画像が出ます。そのキーワードを表しているキャラの画像を選択して下さい。目指せ10問全問正解！</p>
         <img src="start-image.jpg" alt="スタート画面画像" style="width: 300px; height: auto;">
         <button onclick="startQuiz()">クイズを始める</button>
     </div>
@@ -57,13 +56,14 @@
             <img id="img2" class="character-img" onclick="checkAnswer(this)">
         </div>
         <div id="result"></div>
-        <button id="next-btn" onclick="nextQuestion()">次の問題へ</button>
     </div>
     <div id="result-screen" style="display: none;">
         <h2>結果</h2>
         <p id="score"></p>
         <p id="message"></p>
         <img id="result-img" alt="結果画像">
+        <button onclick="retryQuiz()">もう一度チャレンジする</button>
+        <button onclick="backToStart()">スタート画面に戻る</button>
     </div>
 
     <audio id="start-bgm" loop>
@@ -157,17 +157,14 @@
             }
 
             document.getElementById("result").textContent = "";
-            document.getElementById("next-btn").style.display = "none";
             img1.onclick = () => checkAnswer(img1);
             img2.onclick = () => checkAnswer(img2);
 
-            // 1秒タイマー開始
+            // 5秒タイマー開始（自動で不正解にせずに次の問題へ）
             timer = setTimeout(() => {
-                document.getElementById("result").textContent = "時間切れ！不正解…";
-                document.getElementById("next-btn").style.display = "block";
-                img1.onclick = null;
-                img2.onclick = null;
-            }, 1000);
+                document.getElementById("result").textContent = "時間切れ！";
+                setTimeout(nextQuestion, 1000); // 1秒後に次の問題へ
+            }, 5000);
         }
 
         function checkAnswer(img) {
@@ -182,9 +179,7 @@
                 document.getElementById("result").textContent = "不正解…";
             }
 
-            document.getElementById("next-btn").style.display = "block";
-            document.getElementById("img1").onclick = null;
-            document.getElementById("img2").onclick = null;
+            setTimeout(nextQuestion, 1000); // 1秒後に次の問題へ
         }
 
         function nextQuestion() {
@@ -220,6 +215,21 @@
             let resultImg = document.getElementById("result-img");
             resultImg.src = imgSrc;
             resultImg.style.display = "block";
+        }
+
+        function retryQuiz() {
+            quizBgm.pause();
+            startBgm.play();
+            document.getElementById("result-screen").style.display = "none";
+            document.getElementById("start-screen").style.display = "block";
+            startQuiz();
+        }
+
+        function backToStart() {
+            quizBgm.pause();
+            startBgm.play();
+            document.getElementById("result-screen").style.display = "none";
+            document.getElementById("start-screen").style.display = "block";
         }
     </script>
 </body>
