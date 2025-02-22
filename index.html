@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>君は全問正解できるか！超難問グルカタクイズ！</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+        #start-screen, #quiz-screen, #result-screen {
+            margin: 20px;
+        }
+        #keyword {
+            font-size: 24px;
+            margin: 20px;
+        }
+        #images {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .character-img {
+            width: 200px;
+            height: 200px;
+            cursor: pointer;
+            border: 2px solid #000;
+        }
+        #result {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        #next-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            display: none;
+        }
+        #celebration {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="start-screen">
+        <h1>君は全問正解できるか！超難問グルカタクイズ！</h1>
+        <button onclick="startQuiz()">クイズを始める</button>
+    </div>
+    <div id="quiz-screen" style="display: none;">
+        <div id="keyword"></div>
+        <div id="images">
+            <img id="img1" class="character-img" onclick="checkAnswer(this)">
+            <img id="img2" class="character-img" onclick="checkAnswer(this)">
+        </div>
+        <div id="result"></div>
+        <button id="next-btn" onclick="nextQuestion()">次の問題へ</button>
+    </div>
+    <div id="result-screen" style="display: none;">
+        <h2>結果</h2>
+        <p id="score"></p>
+        <p id="message"></p>
+        <img id="celebration" src="celebration.jpg" alt="全問正解！">
+    </div>
+
+    <script>
+        const keywords = [
+            { word: "紫", answer: "glucose" },
+            { word: "ブドウ糖", answer: "glucose" },
+            { word: "播州弁", answer: "glucose" },
+            { word: "姫路", answer: "glucose" },
+            { word: "ヒーロー", answer: "glucose" },
+            { word: "黒", answer: "info" },
+            { word: "情報過多", answer: "info" },
+            { word: "敵", answer: "info" },
+            { word: "悪", answer: "info" },
+            { word: "グルカタのカタ", answer: "info" }
+        ];
+
+        const glucoseImages = [
+            "glucose1.jpg", "glucose2.jpg", "glucose3.jpg", "glucose4.jpg", "glucose5.jpg",
+            "glucose6.jpg", "glucose7.jpg", "glucose8.jpg", "glucose9.jpg", "glucose10.jpg"
+        ];
+        const infoImages = [
+            "info1.jpg", "info2.jpg", "info3.jpg", "info4.jpg", "info5.jpg",
+            "info6.jpg", "info7.jpg", "info8.jpg", "info9.jpg", "info10.jpg"
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let usedKeywords = [];
+        let usedGlucoseImages = [...glucoseImages];
+        let usedInfoImages = [...infoImages];
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function startQuiz() {
+            document.getElementById("start-screen").style.display = "none";
+            document.getElementById("quiz-screen").style.display = "block";
+            usedKeywords = shuffle(keywords).slice(0, 10);
+            usedGlucoseImages = shuffle(glucoseImages);
+            usedInfoImages = shuffle(infoImages);
+            currentQuestion = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestion >= 10) {
+                showResult();
+                return;
+            }
+
+            let keyword = usedKeywords[currentQuestion];
+            document.getElementById("keyword").textContent = `問題 ${currentQuestion + 1}: 「${keyword.word}」`;
+
+            let glucoseImg = usedGlucoseImages.pop();
+            let infoImg = usedInfoImages.pop();
+
+            let img1 = document.getElementById("img1");
+            let img2 = document.getElementById("img2");
+
+            if (Math.random() > 0.5) {
+                img1.src = glucoseImg;
+                img1.dataset.type = "glucose";
+                img2.src = infoImg;
+                img2.dataset.type = "info";
+            } else {
+                img1.src = infoImg;
+                img1.dataset.type = "info";
+                img2.src = glucoseImg;
+                img2.dataset.type = "glucose";
+            }
+
+            document.getElementById("result").textContent = "";
+            document.getElementById("next-btn").style.display = "none";
+            img1.onclick = () => checkAnswer(img1);
+            img2.onclick = () => checkAnswer(img2);
+        }
+
+        function checkAnswer(img) {
+            let selectedType = img.dataset.type;
+            let correctAnswer = usedKeywords[currentQuestion].answer;
+
+            if (selectedType === correctAnswer) {
+                score++;
+                document.getElementById("result").textContent = "正解！";
+            } else {
+                document.getElementById("result").textContent = "不正解…";
+            }
+
+            document.getElementById("next-btn").style.display = "block";
+            document.getElementById("img1").onclick = null;
+            document.getElementById("img2").onclick = null;
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            loadQuestion();
+        }
+
+        function showResult() {
+            document.getElementById("quiz-screen").style.display = "none";
+            document.getElementById("result-screen").style.display = "block";
+
+            let message;
+            if (score === 10) {
+                message = "おめでとう！これであなたもグルコースマン博士ごじゃ！";
+                document.getElementById("celebration").style.display = "block";
+            } else if (score >= 7) {
+                message = "惜しい！あと一歩ごじゃ！";
+            } else if (score >= 3) {
+                message = "まだまだごじゃ！";
+            } else if (score >= 1) {
+                message = "何やっとんねんダボ！";
+            } else {
+                message = "お前、ジョウホウカターンやろ！";
+            }
+
+            document.getElementById("score").textContent = `スコア: ${score}/10`;
+            document.getElementById("message").textContent = message;
+        }
+    </script>
+</body>
+</html>
