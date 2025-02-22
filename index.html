@@ -225,7 +225,9 @@
             function loadImage(imgElement, src) {
                 return new Promise((resolve, reject) => {
                     imgElement.onload = resolve;
-                    imgElement.onerror = reject;
+                    imgElement.onerror = () => {
+                        reject(new Error(`Image load failed for ${src}`));
+                    };
                     imgElement.src = src;
                 });
             }
@@ -268,7 +270,7 @@
 
                 // Start timer
                 timer = setTimeout(() => {
-                    document.getElementById("result").textContent = "Time's up!";
+                    document.getElementById("result").textContent = "時間切れ！";
                     setTimeout(nextQuestion, 1000);
                 }, timeLimit);
             }).catch(error => {
@@ -287,9 +289,9 @@
 
             if (selectedType === correctAnswer) {
                 score++;
-                document.getElementById("result").textContent = "Correct!";
+                document.getElementById("result").textContent = "正解！";
             } else {
-                document.getElementById("result").textContent = "Incorrect...";
+                document.getElementById("result").textContent = "不正解…";
             }
 
             setTimeout(nextQuestion, 1000);
@@ -307,23 +309,23 @@
 
             let message, imgSrc;
             if (score === 10) {
-                message = "Congratulations! You're now a Glucoseman Doctor!";
+                message = "おめでとう！これであなたもグルコースマン博士ごじゃ！";
                 imgSrc = "perfect.jpg";
             } else if (score >= 7) {
-                message = "Close! Just one more step!";
+                message = "惜しい！あと一歩ごじゃ！";
                 imgSrc = "good.jpg";
             } else if (score >= 3) {
-                message = "Still room for improvement!";
+                message = "まだまだごじゃ！";
                 imgSrc = "average.jpg";
             } else if (score >= 1) {
-                message = "What are you doing, Dabo!";
+                message = "何やっとんねんダボ！";
                 imgSrc = "bad.jpg";
             } else {
-                message = "You must be InfoKatan!";
+                message = "お前、ジョウホウカターンやろ！";
                 imgSrc = "fail.jpg";
             }
 
-            document.getElementById("score").textContent = `Score: ${score}/10`;
+            document.getElementById("score").textContent = `スコア: ${score}/10`;
             document.getElementById("message").textContent = message;
             let resultImg = document.getElementById("result-img");
             resultImg.src = imgSrc;
@@ -334,7 +336,22 @@
             quizBgm.pause();
             startBgm.play();
             document.getElementById("result-screen").style.display = "none";
+            document.getElementById("quiz-screen").style.display = "none";
             document.getElementById("start-screen").style.display = "block";
+            // Reset all states
+            currentQuestion = 0;
+            score = 0;
+            usedKeywords = [];
+            usedGlucoseImages = [...glucoseImages];
+            usedInfoImages = [...infoImages];
+            clearTimeout(timer);
+            let img1 = document.getElementById("img1");
+            let img2 = document.getElementById("img2");
+            img1.src = "";
+            img2.src = "";
+            img1.removeAttribute("data-type");
+            img2.removeAttribute("data-type");
+            document.getElementById("result").textContent = "";
         }
     </script>
 </body>
