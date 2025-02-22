@@ -130,8 +130,6 @@
         let currentQuestion = 0;
         let score = 0;
         let usedKeywords = [];
-        let usedGlucoseImages = [...glucoseImages];
-        let usedInfoImages = [...infoImages];
         let timer;
 
         const startBgm = document.getElementById("start-bgm");
@@ -161,14 +159,12 @@
             ];
             usedKeywords = shuffle([...normalQuestions, ...trickQuestions]);
 
-            usedGlucoseImages = shuffle(glucoseImages);
-            usedInfoImages = shuffle(infoImages);
             currentQuestion = 0;
             score = 0;
             loadQuestion();
         }
 
-        const timeLimit = 2000; // 2 seconds
+        const timeLimit = 2000; // 2秒
 
         function loadQuestion() {
             clearTimeout(timer);
@@ -183,16 +179,18 @@
             let img1 = document.getElementById("img1");
             let img2 = document.getElementById("img2");
 
+            // 画像関連の属性をクリア
             img1.src = "";
             img2.src = "";
             img1.removeAttribute("data-type");
             img2.removeAttribute("data-type");
+            document.getElementById("result").textContent = "";
 
             let img1Src, img2Src;
 
             if (keyword.answer === "budou") {
                 let budouImg = budouImages[Math.floor(Math.random() * budouImages.length)];
-                let normalImg = Math.random() > 0.5 ? usedGlucoseImages.pop() : usedInfoImages.pop();
+                let normalImg = Math.random() > 0.5 ? glucoseImages[Math.floor(Math.random() * glucoseImages.length)] : infoImages[Math.floor(Math.random() * infoImages.length)];
                 if (Math.random() > 0.5) {
                     img1Src = budouImg;
                     img2Src = normalImg;
@@ -201,7 +199,7 @@
                     img2Src = budouImg;
                 }
             } else if (keyword.answer === "real") {
-                let normalImg = Math.random() > 0.5 ? usedGlucoseImages.pop() : usedInfoImages.pop();
+                let normalImg = Math.random() > 0.5 ? glucoseImages[Math.floor(Math.random() * glucoseImages.length)] : infoImages[Math.floor(Math.random() * infoImages.length)];
                 if (Math.random() > 0.5) {
                     img1Src = realImage;
                     img2Src = normalImg;
@@ -210,8 +208,8 @@
                     img2Src = realImage;
                 }
             } else {
-                let glucoseImg = usedGlucoseImages.pop();
-                let infoImg = usedInfoImages.pop();
+                let glucoseImg = glucoseImages[Math.floor(Math.random() * glucoseImages.length)];
+                let infoImg = infoImages[Math.floor(Math.random() * infoImages.length)];
                 if (Math.random() > 0.5) {
                     img1Src = glucoseImg;
                     img2Src = infoImg;
@@ -221,65 +219,59 @@
                 }
             }
 
-            // Function to load an image and return a promise
+            // 画像読み込み用の関数
             function loadImage(imgElement, src) {
                 return new Promise((resolve, reject) => {
                     imgElement.onload = resolve;
-                    imgElement.onerror = () => {
-                        reject(new Error(`Image load failed for ${src}`));
-                    };
+                    imgElement.onerror = () => reject(new Error(`画像読み込み失敗: ${src}`));
                     imgElement.src = src;
                 });
             }
 
-            // Load both images
+            // 両方の画像を読み込む
             let img1Load = loadImage(img1, img1Src);
             let img2Load = loadImage(img2, img2Src);
 
-            // Wait for both images to load
-            Promise.all([img1Load, img2Load]).then(() => {
-                // Set the type attributes after images are loaded
-                if (keyword.answer === "budou") {
-                    if (img1.src === budouImg) {
-                        img1.dataset.type = "budou";
-                        img2.dataset.type = "normal";
+            Promise.all([img1Load, img2Load])
+                .then(() => {
+                    // 画像読み込み成功後にタイプを設定
+                    if (keyword.answer === "budou") {
+                        if (budouImages.includes(img1.src.split('/').pop())) {
+                            img1.dataset.type = "budou";
+                            img2.dataset.type = "normal";
+                        } else {
+                            img1.dataset.type = "normal";
+                            img2.dataset.type = "budou";
+                        }
+                    } else if (keyword.answer === "real") {
+                        if (img1.src.split('/').pop() === realImage) {
+                            img1.dataset.type = "real";
+                            img2.dataset.type = "normal";
+                        } else {
+                            img1.dataset.type = "normal";
+                            img2.dataset.type = "real";
+                        }
                     } else {
-                        img1.dataset.type = "normal";
-                        img2.dataset.type = "budou";
+                        if (glucoseImages.includes(img1.src.split('/').pop())) {
+                            img1.dataset.type = "glucose";
+                            img2.dataset.type = "info";
+                        } else {
+                            img1.dataset.type = "info";
+                            img2.dataset.type = "glucose";
+                        }
                     }
-                } else if (keyword.answer === "real") {
-                    if (img1.src === realImage) {
-                        img1.dataset.type = "real";
-                        img2.dataset.type = "normal";
-                    } else {
-                        img1.dataset.type = "normal";
-                        img2.dataset.type = "real";
-                    }
-                } else {
-                    if (img1.src.startsWith("glucose")) {
-                        img1.dataset.type = "glucose";
-                        img2.dataset.type = "info";
-                    } else {
-                        img1.dataset.type = "info";
-                        img2.dataset.type = "glucose";
-                    }
-                }
 
-                // Clear result
-                document.getElementById("result").textContent = "";
-
-                // Start timer
-                timer = setTimeout(() => {
-                    document.getElementById("result").textContent = "時間切れ！";
+                    // タイマーを開始
+                    timer = setTimeout(() => {
+                        document.getElementById("result").textContent = "時間切れ！";
+                        setTimeout(nextQuestion, 1000);
+                    }, timeLimit);
+                })
+                .catch(error => {
+                    console.error(error);
+                    document.getElementById("result").textContent = "画像の読み込みに失敗しました。";
                     setTimeout(nextQuestion, 1000);
-                }, timeLimit);
-            }).catch(error => {
-                console.error("Image loading error:", error);
-                document.getElementById("result").textContent = "画像の読み込みに失敗しました。";
-                setTimeout(() => {
-                    nextQuestion();
-                }, timeLimit); // Wait for timeLimit before moving to next question
-            });
+                });
         }
 
         function checkAnswer(img) {
@@ -303,7 +295,7 @@
         }
 
         function showResult() {
-            quizBgm.play();
+            quizBgm.pause();
             document.getElementById("quiz-screen").style.display = "none";
             document.getElementById("result-screen").style.display = "block";
 
@@ -338,13 +330,13 @@
             document.getElementById("result-screen").style.display = "none";
             document.getElementById("quiz-screen").style.display = "none";
             document.getElementById("start-screen").style.display = "block";
-            // Reset all states
+
+            // 状態を完全にリセット
             currentQuestion = 0;
             score = 0;
             usedKeywords = [];
-            usedGlucoseImages = [...glucoseImages];
-            usedInfoImages = [...infoImages];
             clearTimeout(timer);
+
             let img1 = document.getElementById("img1");
             let img2 = document.getElementById("img2");
             img1.src = "";
